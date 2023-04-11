@@ -1,4 +1,5 @@
 
 /dura/trust_path/bootstrap.options.php
 /dura/trust_path/test.php
+/docker/db/data/*
 ~*

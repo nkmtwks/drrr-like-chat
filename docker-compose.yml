@@ -1,0 +1,85 @@
+version: '3' # おまじない（Composeファイル形式の宣言）
+services: # サービス
+  # db: # (任意の文字列) サービスの名称：db
+  #   image: mysql:5.7.36 # 用いるdockerイメージの指定
+  #   container_name: "mysql_drdn" # (任意の文字列) コンテナの名称
+  #   environment: # コンテナに渡す環境変数の指定
+  #       MYSQL_ROOT_PASSWORD: root # ルートパスワード名
+  #       MYSQL_DATABASE: drdn_db # データーベース名
+  #       MYSQL_USER: admin # ユーザー名
+  #       MYSQL_PASSWORD: secret # パスワード名
+      
+  #       TZ: 'Asia/Tokyo' # タイムゾーン設定：Asia/Tokyo
+  #   ports: # ポートフォワードの指定（ホスト側ポート：コンテナ側ポート）
+  #       - 3306:3306
+  #   # 用いるdockerコマンドの指定
+  #   volumes: # (任意の文字列) ボリュームの名称とマウント先
+  #     # 下記はボリュームのマウント先をホストディレクトリにする書き方です（環境によっては コンテナ内のユーザーが持っている権限とマウントされたディレクトリの権限が一致せずコンテナが立ち上がらないことがあります）
+  #     - ./docker/db/data:/var/lib/mysql # ホストの作業フォルダ内「./docker/db/data」とコンテナ内「/var/lib/mysql」を同期
+  #     - ./docker/db/my.cnf:/etc/mysql/conf.d/my.cnf
+  #     - ./docker/db/sql:/docker-entrypoint-initdb.d
+  #     # 上記の回避策として、下記はホストのディレクトリにマウントするのを諦めて、名前付きボリュームを用いる書き方です
+  #     # - db_data_hitokoto:/var/lib/mysql
+  #     # - db_my.cnf_hitokoto:/etc/mysql/conf.d/my.cnf
+  #     # - db_sql_hitokoto:/docker-entrypoint-initdb.d
+
+  php: # (任意の文字列) サービスの名称：php
+    build: ./docker/php # （指定のディレクトリで）サービスのビルドを実行します
+
+    container_name: "php-fpm_drdn" # (任意の文字列) コンテナの名称
+    # ports: # ポートフォワードの指定（ホスト側ポート：コンテナ側ポート）
+    # - "9000"
+    volumes: # (任意の文字列) ボリュームの名称とマウント先 -> src:/var/www
+      - ./dura:/usr/local/apache2/htdocs
+    working_dir: /usr/local/apache2/htdocs
+
+  # httpd:
+  #   image: httpd:latest
+  #   container_name: "httpd"
+  #   # command: apt-get update && apt-get install vi -y
+  #   # command: /etc/init.d/httpd start
+  #   # command: service httpd start
+  #   # command: httpd -k start
+  #   volumes: # (任意の文字列) ボリュームの名称とマウント先 -> src:/var/www
+  #     - ./dura:/usr/local/apache2/htdocs
+  # #    - ./docker/httpd/sites-enabled:/etc/apache2/sites-enabled
+  #   ports: # ポートフォワードの指定（ホスト側ポート：コンテナ側ポート）
+  #     - 8080:80    
+  #   working_dir: /usr/local/apache2/htdocs
+  #   # tty: true
+
+
+
+  nginx: # (任意の文字列) サービスの名称：nginx
+    image: nginx:latest # 用いるdockerイメージの指定
+    container_name: "nginx" # (任意の文字列) コンテナの名称
+    ports: # ポートフォワードの指定（ホスト側ポート：コンテナ側ポート）
+      - 80:80
+    volumes: # (任意の文字列) ボリュームの名称とマウント先 -> src:/var/www
+      - ./dura:/usr/local/apache2/htdocs
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on: # サービスの依存関係を指定（nginxをphpに依存させる）
+      - php
+
+  # phpmyadmin: # (任意の文字列) サービスの名称：phpmyadmin
+  #   image: phpmyadmin/phpmyadmin:latest # 用いるdockerイメージの指定
+  #   container_name: "phpmyadmin" # (任意の文字列) コンテナの名称
+  #   environment: # コンテナに渡す環境変数の指定
+  #     - PMA_ARBITRARY=1 # サーバ設定：サーバーをローカル以外も指定
+  #     - PMA_HOST=db # ホスト設定：dbを指定
+  #     - PMA_USER=root # 初期ユーザー設定：adminを指定
+  #     - PMA_PASSWORD=root # 初期PW設定：secretを指定
+  #   links:
+  #     - db
+  #   ports: # ポートフォワードの指定（ホスト側ポート：コンテナ側ポート）
+  #     - 8080:80
+  #   volumes: # (任意の文字列) ボリュームの名称とマウント先
+  #     - ./phpmyadmin/sessions:/sessions
+
+
+
+# サービスレベルで名前付きボリュームを命名する
+# volumes:
+#   db_data_hitokoto: # db のvolumes で名前付きボリュームにした「db_data_taskList01:/var/lib/mysql」を db_data_taskList01 に命名する
+#   db_my.cnf_hitokoto: # db のvolumes で名前付きボリュームにした「db_my.cnf_taskList01:/etc/mysql/conf.d/my.cnf」を db_my.cnf_taskList01 に命名する
+#   db_sql_hitokoto: # db のvolumes で名前付きボリュームにした「db_sql_taskList01:/docker-entrypoint-initdb.d」を db_sql_taskList01 に命名する

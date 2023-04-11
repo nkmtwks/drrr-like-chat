@@ -1,0 +1,95 @@
+
+
+
+
+
+
+
+
+
+
+
+
+vi /etc/apache2/sites-enabled/000-default.conf
+
+
+ DirectoryIndex  index.php index.html index.htm
+
+
+oot@b5e3f76f9f40:/usr/local/apache2/bin# ls
+ab  apachectl  apxs  checkgid  dbmmanage  envvars  envvars-std 
+ fcgistarter  htcacheclean  htdbm  htdigest  htpasswd  httpd  httxt2dbm                                                                                                           logresolve  rotatelogs   suexec
+
+ 原因
+原因は「/etc/httpd/conf/httpd.conf」内にサーバネームが記述されていないことがこのメッセージが出力される要因になっています。そのため Apache の設定ファイルである「/etc/httpd/conf/httpd.conf」の書き換えが必要です。
+
+# vi /etc/httpd/conf/httpd.conf
+
+
+
+
+
+
+
+Warning: require(setting.dist.php): failed to open stream: No such file or directory in /usr/local/apache2/htdocs/index.php on line 22
+
+Fatal error: require(): Failed opening required 'setting.dist.php' (include_path='.:/usr/local/lib/php') in /usr/local/apache2/htdocs/index.php on line 22
+
+
+
+root@fea3be01262c:/usr/local/apache2/htdocs# cd usrcd /usr/local/lib/php/
+bash: cd: too many arguments
+root@fea3be01262c:/usr/local/apache2/htdocs# ls
+favicon.ico  index.php  info.php  please_rename.htaccess  robots.txt  static  trust_path
+root@fea3be01262c:/usr/local/apache2/htdocs#
+　・
+
+
+
+
+
+
+
+
+#
+# ServerAdmin: Your address, where problems with the server should be
+# e-mailed.  This address appears on some server-generated pages, such
+# as error documents.  e.g. admin@your-domain.com
+#
+ServerAdmin root@localhost
+
+#
+# ServerName gives the name and port that the server uses to identify itself.
+# This can often be determined automatically, but we recommend you specify
+# it explicitly to prevent problems during startup.
+#
+# If this is not set to valid DNS name for your host, server-generated
+# redirections will not work.  See also the UseCanonicalName directive.
+#
+# If your host doesn't have a registered DNS name, enter its IP address here.
+# You will have to access it by its address anyway, and this will make 
+# redirections work in a sensible way.
+#
+#ServerName www.example.com:80   <= ここの部分を編集
+
+#
+# UseCanonicalName: Determines how Apache constructs self-referencing 
+# URLs and the SERVER_NAME and SERVER_PORT variables.
+# When set "Off", Apache will use the Hostname and Port supplied
+# by the client.  When set "On", Apache will use the value of the
+# ServerName directive.
+#
+UseCanonicalName Off
+
+
+　・
+　・
+　・
+
+viで設定ファイルを開いたら、編集対象箇所を編集します。
+
+編集前
+#ServerName www.example.com:80
+
+編集後
+ServerName www.example.com:80

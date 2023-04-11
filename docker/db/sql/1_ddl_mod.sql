@@ -1,0 +1,11 @@
+CREATE DATABASE IF NOT EXISTS hitokoto_db;
+CREATE TABLE IF NOT EXISTS hitokoto_db.message(
+    id        INTEGER AUTO_INCREMENT PRIMARY KEY,
+    view_name VARCHAR(100) NOT NULL,
+    message   TEXT NOT NULL,
+    post_date DATETIME  NULL DEFAULT CURRENT_TIMESTAMP,
+    
+    imageurl  VARCHAR(255)  NULL
+    
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;   

@@ -12,18 +12,18 @@
  *
  */
 
-/*
+
 if ( file_exists('setting.php') )
 {
-require 'setting.php';
+require dirname(__file__) . '/' .  'setting.php';
 }
 else
 {
-require 'setting.dist.php';
+require dirname(__file__) . '/' . 'setting.dist.php';
 }
 
 require 'dura.php';
-*/
+
 require_once dirname(__file__) . '/trust_path/bootstrap.php';
 
 Dura::setup();
